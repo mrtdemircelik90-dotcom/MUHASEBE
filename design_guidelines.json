@@ -1,0 +1,334 @@
+{
+  "project_name": "Liravest - Modern Kurumsal Finans ve Nakit Akışı Yönetim Platformu",
+  "app_type": "dashboard",
+  "language": "tr",
+  "currency": "TRY",
+  "currency_symbol": "₺",
+  "theme_strategy": {
+    "default_mode": "dark",
+    "support_toggle": true,
+    "aesthetic": "Fintech Obsidian & Deep Spruce with Electric Emerald Accents (Swiss Precision + High-Density Bento Matrix)",
+    "description": "Premium kurumsal finans konsolu. Saf siyah yerine koyu arduvaz/obsidyen zemin, canli zurumut yesili gelir gostergeleri, kizil koral gider indikatörleri ve pürüzsüz cam morfolojisi ile finansal netlik."
+  },
+  "typography": {
+    "google_fonts_url": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap",
+    "font_pairing": {
+      "headings": "'Outfit', 'Plus Jakarta Sans', sans-serif",
+      "body": "'Plus Jakarta Sans', -apple-system, sans-serif",
+      "numbers_and_data": "'JetBrains Mono', monospace",
+      "labels_and_badges": "'Plus Jakarta Sans', sans-serif"
+    },
+    "hierarchy": {
+      "h1_page_title": "text-2xl sm:text-3xl font-bold tracking-tight text-slate-100",
+      "h2_section_title": "text-lg sm:text-xl font-semibold tracking-tight text-slate-200",
+      "h3_card_title": "text-sm sm:text-base font-semibold text-slate-300",
+      "kpi_value": "text-2xl sm:text-3xl font-bold font-mono tracking-tight",
+      "table_data": "text-xs sm:text-sm font-medium",
+      "caption_badge": "text-[11px] font-semibold tracking-wider uppercase",
+      "micro_label": "text-[10px] text-slate-400 font-mono tracking-widest uppercase"
+    }
+  },
+  "colors": {
+    "dark": {
+      "background": "#090D14",
+      "surface_base": "#0E1522",
+      "surface_card": "#131C2E",
+      "surface_elevated": "#1A253C",
+      "surface_subtle": "#111A29",
+      "border_default": "#1E2C44",
+      "border_highlight": "#2E4163",
+      "text_primary": "#F8FAFC",
+      "text_secondary": "#94A3B8",
+      "text_muted": "#64748B",
+      "brand_emerald": "#10B981",
+      "brand_emerald_glow": "rgba(16, 185, 129, 0.15)",
+      "brand_coral": "#F43F5E",
+      "brand_coral_glow": "rgba(244, 63, 94, 0.15)",
+      "brand_cyan": "#06B6D4",
+      "brand_amber": "#F59E0B",
+      "brand_purple": "#8B5CF6"
+    },
+    "light": {
+      "background": "#F8FAFC",
+      "surface_base": "#FFFFFF",
+      "surface_card": "#F1F5F9",
+      "surface_elevated": "#FFFFFF",
+      "border_default": "#E2E8F0",
+      "border_highlight": "#CBD5E1",
+      "text_primary": "#0F172A",
+      "text_secondary": "#475569",
+      "text_muted": "#94A3B8"
+    }
+  },
+  "image_urls": {
+    "user_avatars": [
+      {
+        "name": "Baris Demir (Finans Direktoru)",
+        "image_url": "https://images.unsplash.com/photo-1560250097-0b93528c311a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwxfHxidXNpbmVzcyUyMHBlcnNvbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc5MTU1NTM1MXww&ixlib=rb-4.1.0&q=85",
+        "role": "Mali İşler Direktörü",
+        "company": "Demir Teknoloji A.Ş."
+      },
+      {
+        "name": "Selin Kaya (Muhasebe Müdürü)",
+        "image_url": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwyfHxidXNpbmVzcyUyMHBlcnNvbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc5MTU1NTM1MXww&ixlib=rb-4.1.0&q=85",
+        "role": "Baş Denetçi & Raporlama"
+      },
+      {
+        "name": "Ahmet Yılmaz (Yönetici Ortak)",
+        "image_url": "https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjA1ODh8MHwxfHNlYXJjaHwzfHxidXNpbmVzcyUyMHBlcnNvbiUyMHBvcnRyYWl0fGVufDB8fHx8MTc5MTU1NTM1MXww&ixlib=rb-4.1.0&q=85",
+        "role": "Kurucu Ortak"
+      }
+    ]
+  },
+  "modules_and_navigation": [
+    {
+      "key": "dashboard",
+      "label": "Genel Bakış & KPI",
+      "turkish_title": "Nakit Akışı & Özet Göstergeler",
+      "description": "Anlık toplam bakiye, aylık net gelir/gider oranı, yaklaşan 7 günlük ödeme takvimi ve bento kartları."
+    },
+    {
+      "key": "income",
+      "label": "Gelir Yönetimi",
+      "turkish_title": "Gelir Kayıtları & Satışlar",
+      "description": "Fatura, hizmet satışı, danışmanlık, faiz ve hakediş gelirlerinin eklenmesi, düzenlenmesi ve filtrelenmesi."
+    },
+    {
+      "key": "expense",
+      "label": "Gider Yönetimi",
+      "turkish_title": "Operasyonel & Sabit Giderler",
+      "description": "Kira, personel maaşı, AWS/bulut, vergi, hammadde ve pazarlama harcamalarının yönetimi."
+    },
+    {
+      "key": "accounts",
+      "label": "Banka & Kasa Hesapları",
+      "turkish_title": "Banka & Kasa Portföyü",
+      "description": "Garanti BBVA, İş Bankası, Yapı Kredi, Akbank ve Şirket Kasası bakiyeleri, IBAN ve hesap hareketleri."
+    },
+    {
+      "key": "current_accounts",
+      "label": "Cari Hesaplar (Müşteri & Tedarikçi)",
+      "turkish_title": "Cari Hesaplar & Alacak/Borç",
+      "description": "Müşteri ve tedarikçilerin borç/alacak bakiyeleri, vergi numaraları, iletişim ve cari ekstresi."
+    },
+    {
+      "key": "upcoming",
+      "label": "Yaklaşan Ödeme & Tahsilat",
+      "turkish_title": "Ödeme Takvimi & Tahsilat Planı",
+      "description": "Vadesi yaklaşan çek/senet/havale ödemeleri, gecikmiş tahsilatlar, durum güncellemesi (Ödendi/Bekliyor/Gecikti)."
+    },
+    {
+      "key": "reports",
+      "label": "Finansal Raporlar & Analitik",
+      "turkish_title": "Gelir/Gider Analizi & Dışa Aktar",
+      "description": "Aylık trend grafikleri, kategori bazında pasta grafik, nakit akışı projekte edici ve CSV dışa aktarımı."
+    },
+    {
+      "key": "transactions",
+      "label": "İşlem Geçmişi (Genel Mizan)",
+      "turkish_title": "Tüm Hareketler & Defter-i Kebir",
+      "description": "Tek ekranda filtrelenebilir tüm gelir, gider ve transfer hareketlerinin kronolojik listesi."
+    }
+  ],
+  "preloaded_data_specification": {
+    "bank_accounts": [
+      {
+        "id": "acc-1",
+        "bank_name": "Garanti BBVA",
+        "account_name": "Ticari Ana Hesap",
+        "account_type": "Vadesiz Ticari",
+        "iban": "TR33 0006 2000 0001 2345 6789 01",
+        "balance": 845250.00,
+        "color": "#009036"
+      },
+      {
+        "id": "acc-2",
+        "bank_name": "Türkiye İş Bankası",
+        "account_name": "Operasyon & Maaş Hesabı",
+        "account_type": "Vadesiz Ticari",
+        "iban": "TR64 0006 4000 0012 3456 7890 12",
+        "balance": 412800.50,
+        "color": "#004B87"
+      },
+      {
+        "id": "acc-3",
+        "bank_name": "Yapı Kredi",
+        "account_name": "E-Ticaret & POS Tahsilat",
+        "account_type": "POS Bloke/Vadesiz",
+        "iban": "TR12 0006 7010 0000 0012 3456 78",
+        "balance": 298400.00,
+        "color": "#002B7F"
+      },
+      {
+        "id": "acc-4",
+        "bank_name": "Akbank",
+        "account_name": "Vergi & SGK Fon Hesabı",
+        "account_type": "Vadeli / Likit Fon",
+        "iban": "TR89 0004 6000 0088 8888 8888 88",
+        "balance": 185000.00,
+        "color": "#ED1C24"
+      },
+      {
+        "id": "acc-5",
+        "bank_name": "Şirket Kasası",
+        "account_name": "Merkez Ofis Nakit Kasa",
+        "account_type": "Nakit",
+        "iban": "KASA-001-TRY",
+        "balance": 38450.00,
+        "color": "#F59E0B"
+      }
+    ],
+    "cari_entities": [
+      {
+        "id": "cari-1",
+        "type": "customer",
+        "company_name": "Nova Yazılım ve Danışmanlık A.Ş.",
+        "contact_person": "Ece Çetin",
+        "tax_no": "6310492817",
+        "tax_office": "Zincirlikuyu VD",
+        "phone": "+90 212 444 8920",
+        "email": "muhasebe@novayazilim.com.tr",
+        "balance": 184500.00,
+        "balance_type": "receivable",
+        "category": "Kurumsal Yazılım"
+      },
+      {
+        "id": "cari-2",
+        "type": "customer",
+        "company_name": "Atlas Lojistik & Antrepo Ltd.",
+        "contact_person": "Cemil Bozkurt",
+        "tax_no": "1049823102",
+        "tax_office": "Kadıköy VD",
+        "phone": "+90 216 550 3020",
+        "email": "finans@atlaslojistik.com",
+        "balance": 72400.00,
+        "balance_type": "receivable",
+        "category": "Lojistik & Depo"
+      },
+      {
+        "id": "cari-3",
+        "type": "supplier",
+        "company_name": "BulutHost Bilişim Sunucu Hizmetleri",
+        "contact_person": "Hakan Tekin",
+        "tax_no": "2918374610",
+        "tax_office": "Ümraniye VD",
+        "phone": "+90 850 303 4050",
+        "email": "odeme@buluthost.com",
+        "balance": 46800.00,
+        "balance_type": "payable",
+        "category": "Sunucu & Altyapı"
+      },
+      {
+        "id": "cari-4",
+        "type": "supplier",
+        "company_name": "Plaza Yönetimi & Gayrimenkul A.Ş.",
+        "contact_person": "Meral Aktaş",
+        "tax_no": "7719283011",
+        "tax_office": "Beşiktaş VD",
+        "phone": "+90 212 284 1000",
+        "email": "aidat@maslakplaza.com",
+        "balance": 65000.00,
+        "balance_type": "payable",
+        "category": "Ofis & Kira"
+      },
+      {
+        "id": "cari-5",
+        "type": "customer",
+        "company_name": "Vesta Medya ve Reklam Ajansı",
+        "contact_person": "Görkem Yıldız",
+        "tax_no": "9102837461",
+        "tax_office": "Şişli VD",
+        "phone": "+90 212 310 9080",
+        "email": "fatura@vestamedya.com",
+        "balance": 41200.00,
+        "balance_type": "receivable",
+        "category": "Dijital Pazarlama"
+      }
+    ],
+    "income_categories": [
+      "Yazılım Lisans Satışı",
+      "SaaS Abonelikleri",
+      "Teknik Danışmanlık",
+      "Bakım & Destek Anlaşması",
+      "E-Ticaret Komisyonları",
+      "Mevduat / Fon Getirisi",
+      "Diğer Gelirler"
+    ],
+    "expense_categories": [
+      "Personel Maaş & Prim",
+      "SGK & Muhtasar Vergiler",
+      "Ofis Kirası & Aidat",
+      "Bulut Sunucu & AWS/SaaS",
+      "Pazarlama & Google Ads",
+      "Yazılım / Araç Lisansları",
+      "Muhasebe & Hukuk Danışmanlığı",
+      "Ulaşım & Seyahat",
+      "Ofis İkram & Mutfak"
+    ]
+  },
+  "layout_and_ux_rules": {
+    "sidebar": {
+      "desktop_width": "w-64",
+      "style": "solid dark background with 1px border-r border-slate-800/80 backdrop-blur-xl bg-[#090D14]/95",
+      "active_tab_style": "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 shadow-sm font-semibold",
+      "inactive_tab_style": "text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 font-medium"
+    },
+    "header": {
+      "style": "sticky top-0 z-40 bg-[#090D14]/85 backdrop-blur-xl border-b border-slate-800/80 px-6 py-3.5 flex items-center justify-between",
+      "quick_actions": "Yeni Gelir Ekle, Yeni Gider Ekle, Hızlı Cari Tahsilat, Excel/CSV Aktar, Tema Değiştir"
+    },
+    "bento_grid": {
+      "top_kpi_row": "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6",
+      "charts_row": "grid grid-cols-1 lg:grid-cols-12 gap-6 mb-6",
+      "tables_row": "grid grid-cols-1 lg:grid-cols-12 gap-6"
+    },
+    "modal_and_forms": {
+      "rule": "Use Shadcn Dialog and Select primitives. Form fields must validate TRY currency amounts, dates and select appropriate accounts/cari.",
+      "visuals": "Dark slate modal surface (#131C2E) with border-slate-700/60, high contrast inputs (#0E1522), clear submit button."
+    }
+  },
+  "testing_and_data_attributes": {
+    "rule": "Every interactive button, tab, input, table row, filter, and modal trigger MUST have data-testid attributes",
+    "examples": [
+      "data-testid='nav-dashboard-button'",
+      "data-testid='nav-income-button'",
+      "data-testid='nav-expense-button'",
+      "data-testid='nav-accounts-button'",
+      "data-testid='nav-cari-button'",
+      "data-testid='nav-upcoming-button'",
+      "data-testid='nav-reports-button'",
+      "data-testid='nav-transactions-button'",
+      "data-testid='quick-add-income-button'",
+      "data-testid='quick-add-expense-button'",
+      "data-testid='kpi-total-balance'",
+      "data-testid='kpi-monthly-income'",
+      "data-testid='kpi-monthly-expense'",
+      "data-testid='kpi-net-cashflow'",
+      "data-testid='export-csv-button'",
+      "data-testid='filter-search-input'",
+      "data-testid='income-form-amount-input'",
+      "data-testid='income-form-submit-button'",
+      "data-testid='expense-form-amount-input'",
+      "data-testid='expense-form-submit-button'",
+      "data-testid='cari-add-button'",
+      "data-testid='account-transfer-button'",
+      "data-testid='mark-paid-button-0'"
+    ]
+  },
+  "formatters": {
+    "currency_tr": "Intl.NumberFormat('tr-TR', { style: 'currency', currency: 'TRY' })",
+    "date_tr": "Intl.DateTimeFormat('tr-TR', { day: '2-digit', month: 'long', year: 'numeric' })"
+  },
+  "instructions_to_main_agent": [
+    "Uygulamanın tamamını Türkçe yapınız. Para birimi istisnasız Türk Lirası (₺ / TRY) olarak biçimlendirilmelidir.",
+    "Bütün veri durumları (gelirler, giderler, banka hesapları, cari hesaplar, yaklaşan ödemeler) yerel durum ve LocalStorage ile kalıcı hale getirilmelidir, kullanıcı sayfa yenilese dahi eklediği kayıtlar kaybolmamalıdır.",
+    "Kullanıcıya zengin varsayılan kurumsal veri (örnek banka hesapları, cari cariler, son gelir ve giderler, vadesi gelen çek ve faturalar) önceden yüklenmiş olarak sunulmalıdır ki açıldığı an yaşayan gerçek bir finans yazılımı hissi versin.",
+    "Recharts kütüphanesini kullanarak: Nakit Akışı Trendi (Alan Grafiği), Kategori Bazlı Gider Dağılımı (Donut/Pie Chart), Aylık Gelir vs Gider Kıyaslaması (Bar Chart) sunulmalıdır.",
+    "Bütün formlarda (Yeni Gelir, Yeni Gider, Cari Ekle, Hesap Ekle, Ödeme Kaydet) validation ve anlık Sonner toast bildirimleri gösterilmelidir.",
+    "Raporlar sekmesinde filtrelenmiş verileri gerçek indirilebilir UTF-8 CSV dosyası olarak dışa aktaran buton bulunmalıdır.",
+    "Banka hesapları arasında transfer (Virman / Hesaplararası Havale) özelliği bulunmalı, bir hesaptan düşüp diğerine ekleme mantığı çalışmalıdır.",
+    "Cari hesaplar sekmesinde hem Müşteriler (Alacaklı olduğumuz) hem Tedarikçiler (Borçlu olduğumuz) sekmelerle filtrelenebilmeli, cariye özel tahsilat veya ödeme yapıldığında ilgili cari bakiyesi ve seçilen banka hesabı otomatik güncellenmelidir.",
+    "Header kısmında 'Hızlı İşlem' menüsü veya modal tetikleyicileri ile kullanıcı tek tıkla gelir veya gider ekleyebilmelidir.",
+    "Tüm etkileşimli elementlere data-testid verilmeli ve APCA/WCAG kontrast kurallarına tam uyulmalıdır."
+  ]
+}
