@@ -28,6 +28,13 @@ Gelirleri, giderleri, banka hesaplarını, cari hesapları, yaklaşan ödemeleri
 - Tüm interaktif elementlerde `data-testid`
 - Testing agent: 11/11 flow geçti (%100)
 
+## Eklenen (09.10.2026): Emergent Google Auth
+- Backend: `/api/auth/session`, `/api/auth/me`, `/api/auth/logout` (httpOnly cookie + Bearer fallback)
+- MongoDB `users` (custom `user_id` UUID) ve `user_sessions` (7 gün TTL) koleksiyonları
+- Frontend: `/login` sayfası, `AuthCallback` (hash'teki session_id'yi işler), `ProtectedRoute`, header'da avatar menüsü + çıkış
+- CORS `allow_credentials=true` + spesifik origin
+- Testing agent iter 2: Backend 7/7 + Frontend 5/5 (%100)
+
 ## Deferred / Backlog
 - P1: Grafikler için tarih aralığı filtresi (Son 30/60/90 gün)
 - P1: Her kaydı düzenleme (şu an sadece sil + yeniden ekle)
