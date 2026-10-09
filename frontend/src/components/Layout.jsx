@@ -13,18 +13,22 @@ import {
   Minus,
   ArrowLeftRight,
   RefreshCw,
+  LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { Toaster } from "sonner";
 import { IncomeDialog, ExpenseDialog, TransferDialog } from "./FinanceDialogs";
 import { useFinance } from "@/lib/finance-store";
+import { useAuth } from "@/lib/auth-context";
 import { fmtTRY } from "@/lib/format";
 
 const NAV = [
@@ -43,7 +47,14 @@ export default function Layout() {
   const [expenseOpen, setExpenseOpen] = useState(false);
   const [transferOpen, setTransferOpen] = useState(false);
   const { accounts, resetAll } = useFinance();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const initials = (user?.name || user?.email || "L")
+    .split(" ")
+    .map((p) => p[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
 
   const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
 
@@ -153,6 +164,39 @@ export default function Layout() {
                 <DropdownMenuSeparator className="bg-slate-700" />
                 <DropdownMenuItem onClick={() => navigate("/raporlar")}>
                   <PieChart className="h-4 w-4 mr-2" /> Raporlara Git
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button
+                  className="h-9 w-9 rounded-full ring-2 ring-slate-800 hover:ring-emerald-500/40 transition-all overflow-hidden"
+                  data-testid="user-menu-button"
+                  aria-label="Kullanıcı menüsü"
+                >
+                  <Avatar className="h-9 w-9">
+                    {user?.picture && <AvatarImage src={user.picture} alt={user.name} />}
+                    <AvatarFallback className="bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950 text-xs font-bold">{initials}</AvatarFallback>
+                  </Avatar>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="bg-[#131C2E] border-slate-700 text-slate-200 min-w-[220px]">
+                <DropdownMenuLabel className="px-2 py-2">
+                  <div className="flex items-center gap-2.5">
+                    <Avatar className="h-9 w-9">
+                      {user?.picture && <AvatarImage src={user.picture} alt={user.name} />}
+                      <AvatarFallback className="bg-gradient-to-br from-emerald-400 to-cyan-500 text-slate-950 text-xs font-bold">{initials}</AvatarFallback>
+                    </Avatar>
+                    <div className="min-w-0">
+                      <div className="text-sm font-semibold text-slate-100 truncate" data-testid="user-menu-name">{user?.name}</div>
+                      <div className="text-[11px] text-slate-400 truncate" data-testid="user-menu-email">{user?.email}</div>
+                    </div>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator className="bg-slate-700" />
+                <DropdownMenuItem onClick={logout} className="text-rose-400 focus:text-rose-400 focus:bg-rose-500/10" data-testid="logout-button">
+                  <LogOut className="h-4 w-4 mr-2" /> Çıkış Yap
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
