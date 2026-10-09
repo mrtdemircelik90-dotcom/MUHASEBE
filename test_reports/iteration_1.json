@@ -1,0 +1,26 @@
+{
+  "summary": "Frontend-only MVP smoke test for Liravest (client-side TRY finance app). All 11 flows exercised successfully: dashboard KPIs, sidebar navigation, income/expense quick-add, virman transfer, cari add, upcoming settle, reports+CSV, transactions filters, LocalStorage persistence after reload, and reset. Balance math verified (+5000 income, -1500 expense reflected in sidebar-total-balance).",
+  "tested_scope": ["frontend", "integration"],
+  "passed": [
+    "Dashboard loads with all 4 KPI cards populated (kpi-total-balance ₺1.779.900,50; kpi-monthly-income ₺173.500,00; kpi-monthly-expense ₺396.800,00; kpi-net-cashflow -₺223.300,00)",
+    "All 8 sidebar nav buttons route correctly (/, /gelir, /gider, /hesaplar, /cari, /yaklasan, /raporlar, /hareketler)",
+    "Quick-add Income: amount=5000 submitted, sidebar-total-balance increased from ₺1.779.900,50 to ₺1.784.900,50 (+5000 exact)",
+    "Quick-add Expense: amount=1500 submitted, sidebar-total-balance decreased to ₺1.783.400,50 (-1500 exact)",
+    "Virman transfer: from/to accounts + amount=2000 submitted via header-more-menu → menu-transfer-button",
+    "Cari page: cari-total-receivable=₺298.100,00, cari-total-payable=₺111.800,00; new 'Test Firma AŞ' card appeared after submit",
+    "Upcoming settle: mark-paid-button-0 opened settle-dialog, account selected, submitted successfully",
+    "Reports: report-total-income=₺461.600,00, report-total-expense=₺890.000,00, report-net=-₺428.400,00; export-csv-button present; charts render",
+    "Transactions page: transactions-search-input and transactions-type-filter both present and interactive",
+    "LocalStorage persistence verified: key 'liravest-finance-v1' present (7851 chars); after hard-reload /gelir still shows 9 rows (seed 8 + added 1)",
+    "Reset button clicked and dialog accepted"
+  ],
+  "failed": [],
+  "warnings": [
+    "Recharts console warnings 'width(-1) and height(-1)' repeated on Reports/Dashboard - cosmetic, charts still render (non-blocking)",
+    "Radix DialogContent missing aria-describedby - a11y warning only (non-blocking)"
+  ],
+  "action_items": [],
+  "success_rate": {"backend": "N/A (skipped)", "frontend": "100%"},
+  "retest_needed": false,
+  "full_testing_deferred": true
+}
