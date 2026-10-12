@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
 import { useFinance } from "@/lib/finance-store";
 import { fmtTRY, fmtDate } from "@/lib/format";
+import { downloadCSV, DATE_RANGES, inRange } from "@/lib/csv";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,8 +25,12 @@ import {
   Mail,
   Trash2,
   Search,
+  Download,
+  Pencil,
 } from "lucide-react";
 import { IncomeDialog, ExpenseDialog } from "@/components/FinanceDialogs";
+import EditEntryDialog from "@/components/EditEntryDialog";
+import { toast } from "sonner";
 
 export default function CariDetail() {
   const { id } = useParams();
@@ -33,38 +38,39 @@ export default function CariDetail() {
   const { cari, accounts, income, expense, upcoming, deleteIncome, deleteExpense } = useFinance();
   const [incomeOpen, setIncomeOpen] = useState(false);
   const [expenseOpen, setExpenseOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [editing, setEditing] = useState({ kind: null, entry: null });
   const [q, setQ] = useState("");
+  const [rangeKey, setRangeKey] = useState("all");
+  const [customFrom, setCustomFrom] = useState("");
+  const [customTo, setCustomTo] = useState("");
 
   const entity = cari.find((c) => c.id === id);
   const findAccount = (aid) => accounts.find((a) => a.id === aid);
+  const range = DATE_RANGES.find((r) => r.key === rangeKey) || DATE_RANGES[0];
+
+  const openEdit = (kind, originalId) => {
+    const entry = kind === "income" ? income.find((i) => i.id === originalId) : expense.find((e) => e.id === originalId);
+    if (!entry) return;
+    setEditing({ kind, entry });
+    setEditOpen(true);
+  };
 
   const statement = useMemo(() => {
     if (!entity) return [];
     const incomes = income
       .filter((i) => i.cari_id === id)
       .map((i) => ({
-        id: i.id,
-        kind: "income",
-        date: i.date,
-        direction: "+",
-        label: "Tahsilat",
-        amount: i.amount,
-        category: i.category,
-        description: i.description,
-        account: findAccount(i.account_id)?.bank_name,
+        id: i.id, kind: "income", date: i.date, direction: "+",
+        label: "Tahsilat", amount: i.amount, category: i.category,
+        description: i.description, account: findAccount(i.account_id)?.bank_name,
       }));
     const expenses = expense
       .filter((e) => e.cari_id === id)
       .map((e) => ({
-        id: e.id,
-        kind: "expense",
-        date: e.date,
-        direction: "−",
-        label: "Ödeme",
-        amount: e.amount,
-        category: e.category,
-        description: e.description,
-        account: findAccount(e.account_id)?.bank_name,
+        id: e.id, kind: "expense", date: e.date, direction: "−",
+        label: "Ödeme", amount: e.amount, category: e.category,
+        description: e.description, account: findAccount(e.account_id)?.bank_name,
       }));
     return [...incomes, ...expenses].sort((a, b) => new Date(b.date) - new Date(a.date));
   }, [entity, id, income, expense, accounts]);
@@ -76,17 +82,31 @@ export default function CariDetail() {
 
   const filtered = useMemo(() => {
     const term = q.toLowerCase();
-    if (!term) return statement;
-    return statement.filter(
-      (r) =>
+    return statement.filter((r) => {
+      if (!inRange(r.date, range, customFrom, customTo)) return false;
+      if (!term) return true;
+      return (
         r.description?.toLowerCase().includes(term) ||
         r.category?.toLowerCase().includes(term) ||
-        r.account?.toLowerCase().includes(term),
-    );
-  }, [statement, q]);
+        r.account?.toLowerCase().includes(term)
+      );
+    });
+  }, [statement, q, range, customFrom, customTo]);
 
-  const totalIn = statement.filter((r) => r.direction === "+").reduce((s, r) => s + r.amount, 0);
-  const totalOut = statement.filter((r) => r.direction === "−").reduce((s, r) => s + r.amount, 0);
+  const totalIn = filtered.filter((r) => r.direction === "+").reduce((s, r) => s + r.amount, 0);
+  const totalOut = filtered.filter((r) => r.direction === "−").reduce((s, r) => s + r.amount, 0);
+
+  const exportCSV = () => {
+    const rows = filtered.map((r) => ({
+      Tarih: r.date,
+      Islem: r.label,
+      Aciklama: r.description || "",
+      Kategori: r.category,
+      Hesap: r.account || "",
+      Tutar: r.direction === "+" ? r.amount : -r.amount,
+    }));
+    downloadCSV(`${entity.company_name.replace(/\s+/g, "_")}_cari_ekstre_${new Date().toISOString().slice(0, 10)}.csv`, rows);
+  };
 
   if (!entity) {
     return (
@@ -170,12 +190,32 @@ export default function CariDetail() {
 
       <Card className="bg-[#131C2E] border-slate-800 p-4">
         <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
-          <h2 className="font-display text-lg font-semibold text-slate-200">Cari Ekstresi · {statement.length} hareket</h2>
-          <div className="relative">
-            <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
-            <Input placeholder="Açıklama / hesap ara..." value={q} onChange={(e) => setQ(e.target.value)} className="bg-[#0E1522] border-slate-700 pl-9 w-56" data-testid="cari-detail-search" />
+          <h2 className="font-display text-lg font-semibold text-slate-200">Cari Ekstresi · {filtered.length} / {statement.length} hareket</h2>
+          <div className="flex gap-2 flex-wrap items-center">
+            <div className="relative">
+              <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+              <Input placeholder="Açıklama / hesap ara..." value={q} onChange={(e) => setQ(e.target.value)} className="bg-[#0E1522] border-slate-700 pl-9 w-48" data-testid="cari-detail-search" />
+            </div>
+            <Select value={rangeKey} onValueChange={setRangeKey}>
+              <SelectTrigger className="bg-[#0E1522] border-slate-700 w-[140px]" data-testid="cari-detail-range"><SelectValue /></SelectTrigger>
+              <SelectContent>
+                {DATE_RANGES.map((r) => <SelectItem key={r.key} value={r.key}>{r.label}</SelectItem>)}
+              </SelectContent>
+            </Select>
+            <Button onClick={exportCSV} variant="outline" size="sm" className="bg-cyan-500/10 border-cyan-500/30 text-cyan-400 hover:bg-cyan-500/20 hover:text-cyan-300 gap-1.5" data-testid="cari-detail-export">
+              <Download className="h-4 w-4" /> CSV
+            </Button>
           </div>
         </div>
+
+        {rangeKey === "custom" && (
+          <div className="flex gap-2 mb-4 items-center text-xs">
+            <span className="text-slate-400">Başlangıç:</span>
+            <Input type="date" value={customFrom} onChange={(e) => setCustomFrom(e.target.value)} className="bg-[#0E1522] border-slate-700 w-40" />
+            <span className="text-slate-400">Bitiş:</span>
+            <Input type="date" value={customTo} onChange={(e) => setCustomTo(e.target.value)} className="bg-[#0E1522] border-slate-700 w-40" />
+          </div>
+        )}
 
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -210,15 +250,20 @@ export default function CariDetail() {
                     <td className="py-3 px-2 text-slate-400 text-xs">{r.account || "-"}</td>
                     <td className={`py-3 px-2 text-right font-mono-data font-bold ${color}`}>{r.direction}{fmtTRY(r.amount)}</td>
                     <td className="py-3 px-2 text-right">
-                      <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-rose-400" onClick={() => (r.kind === "income" ? deleteIncome(r.id) : deleteExpense(r.id))}>
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-0.5">
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-emerald-400" onClick={() => openEdit(r.kind, r.id)} data-testid={`cari-detail-edit-${idx}`} title="Düzenle">
+                          <Pencil className="h-3.5 w-3.5" />
+                        </Button>
+                        <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-rose-400" onClick={() => { r.kind === "income" ? deleteIncome(r.id) : deleteExpense(r.id); toast.success("Kayıt silindi"); }} data-testid={`cari-detail-delete-${idx}`} title="Sil">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 );
               })}
               {filtered.length === 0 && (
-                <tr><td colSpan={7} className="py-10 text-center text-slate-500">Henüz hareket yok. Yukarıdan Tahsilat / Ödeme ekleyebilirsin.</td></tr>
+                <tr><td colSpan={7} className="py-10 text-center text-slate-500">Seçili filtrelerde hareket yok.</td></tr>
               )}
             </tbody>
           </table>
@@ -227,6 +272,7 @@ export default function CariDetail() {
 
       <IncomeDialog open={incomeOpen} onOpenChange={setIncomeOpen} defaults={{ cari_id: id }} />
       <ExpenseDialog open={expenseOpen} onOpenChange={setExpenseOpen} defaults={{ cari_id: id }} />
+      <EditEntryDialog open={editOpen} onOpenChange={setEditOpen} kind={editing.kind} entry={editing.entry} />
     </div>
   );
 }

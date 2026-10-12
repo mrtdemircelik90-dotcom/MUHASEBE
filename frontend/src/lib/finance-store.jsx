@@ -148,6 +148,33 @@ export const FinanceProvider = ({ children }) => {
       };
     });
 
+  const updateIncome = (id, patch) =>
+    setState((s) => {
+      const old = s.income.find((i) => i.id === id);
+      if (!old) return s;
+      const next = {
+        ...old,
+        ...patch,
+        amount: Number(patch.amount ?? old.amount) || 0,
+      };
+      const accDelta = {};
+      accDelta[old.account_id] = (accDelta[old.account_id] || 0) - old.amount;
+      accDelta[next.account_id] = (accDelta[next.account_id] || 0) + next.amount;
+      const cariDelta = {};
+      if (old.cari_id) cariDelta[old.cari_id] = (cariDelta[old.cari_id] || 0) + old.amount;
+      if (next.cari_id) cariDelta[next.cari_id] = (cariDelta[next.cari_id] || 0) - next.amount;
+      return {
+        ...s,
+        income: s.income.map((i) => (i.id === id ? next : i)),
+        accounts: s.accounts.map((a) =>
+          accDelta[a.id] ? { ...a, balance: a.balance + accDelta[a.id] } : a,
+        ),
+        cari: s.cari.map((c) =>
+          cariDelta[c.id] ? { ...c, balance: c.balance + cariDelta[c.id] } : c,
+        ),
+      };
+    });
+
   // ----- Expense
   const addExpense = (item) => {
     const payload = {
@@ -187,6 +214,33 @@ export const FinanceProvider = ({ children }) => {
               c.id === target.cari_id ? { ...c, balance: c.balance + target.amount } : c,
             )
           : s.cari,
+      };
+    });
+
+  const updateExpense = (id, patch) =>
+    setState((s) => {
+      const old = s.expense.find((e) => e.id === id);
+      if (!old) return s;
+      const next = {
+        ...old,
+        ...patch,
+        amount: Number(patch.amount ?? old.amount) || 0,
+      };
+      const accDelta = {};
+      accDelta[old.account_id] = (accDelta[old.account_id] || 0) + old.amount;
+      accDelta[next.account_id] = (accDelta[next.account_id] || 0) - next.amount;
+      const cariDelta = {};
+      if (old.cari_id) cariDelta[old.cari_id] = (cariDelta[old.cari_id] || 0) + old.amount;
+      if (next.cari_id) cariDelta[next.cari_id] = (cariDelta[next.cari_id] || 0) - next.amount;
+      return {
+        ...s,
+        expense: s.expense.map((e) => (e.id === id ? next : e)),
+        accounts: s.accounts.map((a) =>
+          accDelta[a.id] ? { ...a, balance: a.balance + accDelta[a.id] } : a,
+        ),
+        cari: s.cari.map((c) =>
+          cariDelta[c.id] ? { ...c, balance: c.balance + cariDelta[c.id] } : c,
+        ),
       };
     });
 
@@ -304,8 +358,10 @@ export const FinanceProvider = ({ children }) => {
     adjustCari,
     addIncome,
     deleteIncome,
+    updateIncome,
     addExpense,
     deleteExpense,
+    updateExpense,
     transfer,
     addUpcoming,
     settleUpcoming,
