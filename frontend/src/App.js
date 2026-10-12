@@ -10,6 +10,8 @@ import Income from "@/pages/Income";
 import Expense from "@/pages/Expense";
 import Accounts from "@/pages/Accounts";
 import CurrentAccounts from "@/pages/CurrentAccounts";
+import CariDetail from "@/pages/CariDetail";
+import AccountDetail from "@/pages/AccountDetail";
 import Upcoming from "@/pages/Upcoming";
 import Reports from "@/pages/Reports";
 import Transactions from "@/pages/Transactions";
@@ -41,7 +43,9 @@ function AppRouter() {
         <Route path="gelir" element={<Income />} />
         <Route path="gider" element={<Expense />} />
         <Route path="hesaplar" element={<Accounts />} />
+        <Route path="hesaplar/:id" element={<AccountDetail />} />
         <Route path="cari" element={<CurrentAccounts />} />
+        <Route path="cari/:id" element={<CariDetail />} />
         <Route path="yaklasan" element={<Upcoming />} />
         <Route path="raporlar" element={<Reports />} />
         <Route path="hareketler" element={<Transactions />} />

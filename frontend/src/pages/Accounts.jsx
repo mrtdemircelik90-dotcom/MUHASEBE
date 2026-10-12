@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useFinance } from "@/lib/finance-store";
 import { fmtTRY } from "@/lib/format";
+import { useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,7 +13,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Plus, ArrowLeftRight, Trash2, Wallet, Copy, Pencil } from "lucide-react";
+import { Plus, ArrowLeftRight, Trash2, Wallet, Copy, Pencil, FileText } from "lucide-react";
 import { TransferDialog } from "@/components/FinanceDialogs";
 import { toast } from "sonner";
 
@@ -27,6 +28,7 @@ const emptyForm = () => ({
 
 export default function Accounts() {
   const { accounts, transfers, addAccount, deleteAccount, updateAccount } = useFinance();
+  const navigate = useNavigate();
   const [transferOpen, setTransferOpen] = useState(false);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
@@ -106,6 +108,16 @@ export default function Accounts() {
                 </div>
               </div>
               <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-slate-500 hover:text-cyan-400"
+                  onClick={() => navigate(`/hesaplar/${a.id}`)}
+                  data-testid={`account-detail-button-${idx}`}
+                  title="Ekstre & Hareketler"
+                >
+                  <FileText className="h-4 w-4" />
+                </Button>
                 <Button
                   variant="ghost"
                   size="icon"

@@ -21,7 +21,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Plus, Trash2, Phone, Mail, Building2, Pencil } from "lucide-react";
+import { Plus, Trash2, Phone, Mail, Building2, Pencil, FileText } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 
 const emptyForm = () => ({
@@ -38,6 +39,7 @@ const emptyForm = () => ({
 
 export default function CurrentAccounts() {
   const { cari, addCari, deleteCari, updateCari } = useFinance();
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [tab, setTab] = useState("all");
@@ -133,6 +135,16 @@ export default function CurrentAccounts() {
                     </div>
                   </div>
                   <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-slate-500 hover:text-cyan-400"
+                      onClick={() => navigate(`/cari/${c.id}`)}
+                      data-testid={`cari-detail-button-${idx}`}
+                      title="Ekstre & Hareketler"
+                    >
+                      <FileText className="h-3.5 w-3.5" />
+                    </Button>
                     <Button
                       variant="ghost"
                       size="icon"

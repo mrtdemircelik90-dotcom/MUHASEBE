@@ -40,9 +40,13 @@ const emptyExpense = () => ({
   description: "",
 });
 
-export const IncomeDialog = ({ open, onOpenChange }) => {
+export const IncomeDialog = ({ open, onOpenChange, defaults }) => {
   const { accounts, cari, categories, addIncome } = useFinance();
   const [form, setForm] = useState(emptyIncome());
+
+  React.useEffect(() => {
+    if (open) setForm({ ...emptyIncome(), ...(defaults || {}) });
+  }, [open, defaults]);
 
   const submit = () => {
     if (!form.amount || Number(form.amount) <= 0)
@@ -99,7 +103,7 @@ export const IncomeDialog = ({ open, onOpenChange }) => {
                 <SelectTrigger className="bg-[#0E1522] border-slate-700" data-testid="income-form-cari-select"><SelectValue placeholder="Cari seç" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Yok</SelectItem>
-                  {cari.filter((c) => c.type === "customer").map((c) => <SelectItem key={c.id} value={c.id}>{c.company_name}</SelectItem>)}
+                  {cari.map((c) => <SelectItem key={c.id} value={c.id}>{c.company_name} ({c.type === "customer" ? "Müşteri" : "Tedarikçi"})</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
@@ -118,9 +122,13 @@ export const IncomeDialog = ({ open, onOpenChange }) => {
   );
 };
 
-export const ExpenseDialog = ({ open, onOpenChange }) => {
+export const ExpenseDialog = ({ open, onOpenChange, defaults }) => {
   const { accounts, cari, categories, addExpense } = useFinance();
   const [form, setForm] = useState(emptyExpense());
+
+  React.useEffect(() => {
+    if (open) setForm({ ...emptyExpense(), ...(defaults || {}) });
+  }, [open, defaults]);
 
   const submit = () => {
     if (!form.amount || Number(form.amount) <= 0) return toast.error("Geçerli bir tutar girin");
@@ -174,7 +182,7 @@ export const ExpenseDialog = ({ open, onOpenChange }) => {
                 <SelectTrigger className="bg-[#0E1522] border-slate-700" data-testid="expense-form-cari-select"><SelectValue placeholder="Cari seç" /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="none">Yok</SelectItem>
-                  {cari.filter((c) => c.type === "supplier").map((c) => <SelectItem key={c.id} value={c.id}>{c.company_name}</SelectItem>)}
+                  {cari.map((c) => <SelectItem key={c.id} value={c.id}>{c.company_name} ({c.type === "customer" ? "Müşteri" : "Tedarikçi"})</SelectItem>)}
                 </SelectContent>
               </Select>
             </div>
