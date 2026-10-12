@@ -21,24 +21,27 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Plus, Trash2, Phone, Mail, Building2 } from "lucide-react";
+import { Plus, Trash2, Phone, Mail, Building2, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
+const emptyForm = () => ({
+  type: "customer",
+  company_name: "",
+  contact_person: "",
+  tax_no: "",
+  tax_office: "",
+  phone: "",
+  email: "",
+  balance: 0,
+  category: "",
+});
+
 export default function CurrentAccounts() {
-  const { cari, addCari, deleteCari } = useFinance();
+  const { cari, addCari, deleteCari, updateCari } = useFinance();
   const [open, setOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
   const [tab, setTab] = useState("all");
-  const [form, setForm] = useState({
-    type: "customer",
-    company_name: "",
-    contact_person: "",
-    tax_no: "",
-    tax_office: "",
-    phone: "",
-    email: "",
-    balance: 0,
-    category: "",
-  });
+  const [form, setForm] = useState(emptyForm());
 
   const filtered = useMemo(() => {
     if (tab === "all") return cari;
@@ -48,11 +51,39 @@ export default function CurrentAccounts() {
   const totalReceivable = cari.filter((c) => c.type === "customer").reduce((s, c) => s + c.balance, 0);
   const totalPayable = cari.filter((c) => c.type === "supplier").reduce((s, c) => s + c.balance, 0);
 
+  const openAdd = () => {
+    setEditingId(null);
+    setForm(emptyForm());
+    setOpen(true);
+  };
+
+  const openEdit = (c) => {
+    setEditingId(c.id);
+    setForm({
+      type: c.type,
+      company_name: c.company_name,
+      contact_person: c.contact_person || "",
+      tax_no: c.tax_no || "",
+      tax_office: c.tax_office || "",
+      phone: c.phone || "",
+      email: c.email || "",
+      balance: c.balance,
+      category: c.category || "",
+    });
+    setOpen(true);
+  };
+
   const submit = () => {
     if (!form.company_name) return toast.error("Firma adı zorunlu");
-    addCari(form);
-    toast.success("Cari eklendi");
-    setForm({ type: "customer", company_name: "", contact_person: "", tax_no: "", tax_office: "", phone: "", email: "", balance: 0, category: "" });
+    if (editingId) {
+      updateCari(editingId, form);
+      toast.success("Cari güncellendi");
+    } else {
+      addCari(form);
+      toast.success("Cari eklendi");
+    }
+    setForm(emptyForm());
+    setEditingId(null);
     setOpen(false);
   };
 
@@ -63,7 +94,7 @@ export default function CurrentAccounts() {
           <h1 className="font-display text-2xl sm:text-3xl font-bold tracking-tight">Cari Hesaplar</h1>
           <p className="text-sm text-slate-400 mt-1">Müşteri alacakları ve tedarikçi borçları</p>
         </div>
-        <Button onClick={() => setOpen(true)} className="bg-emerald-500 hover:bg-emerald-600 text-white gap-1.5" data-testid="cari-add-button">
+        <Button onClick={openAdd} className="bg-emerald-500 hover:bg-emerald-600 text-white gap-1.5" data-testid="cari-add-button">
           <Plus className="h-4 w-4" /> Yeni Cari
         </Button>
       </div>
@@ -90,7 +121,7 @@ export default function CurrentAccounts() {
         <TabsContent value={tab} className="mt-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {filtered.map((c, idx) => (
-              <Card key={c.id} className="bg-[#131C2E] border-slate-800 p-5" data-testid={`cari-card-${idx}`}>
+              <Card key={c.id} className="bg-[#131C2E] border-slate-800 p-5 hover:border-slate-700 transition-colors" data-testid={`cari-card-${idx}`}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3 min-w-0">
                     <div className={`h-10 w-10 rounded-lg grid place-items-center shrink-0 ${c.type === "customer" ? "bg-emerald-500/10 text-emerald-400" : "bg-rose-500/10 text-rose-400"}`}>
@@ -101,9 +132,28 @@ export default function CurrentAccounts() {
                       <div className="text-xs text-slate-500 truncate">{c.contact_person}</div>
                     </div>
                   </div>
-                  <Button variant="ghost" size="icon" className="h-7 w-7 text-slate-500 hover:text-rose-400 shrink-0" onClick={() => { if (confirm("Cariyi sil?")) { deleteCari(c.id); toast.success("Cari silindi"); } }}>
-                    <Trash2 className="h-3.5 w-3.5" />
-                  </Button>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-slate-500 hover:text-emerald-400"
+                      onClick={() => openEdit(c)}
+                      data-testid={`cari-edit-button-${idx}`}
+                      title="Düzenle"
+                    >
+                      <Pencil className="h-3.5 w-3.5" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 text-slate-500 hover:text-rose-400"
+                      onClick={() => { if (confirm("Cariyi sil?")) { deleteCari(c.id); toast.success("Cari silindi"); } }}
+                      data-testid={`cari-delete-button-${idx}`}
+                      title="Sil"
+                    >
+                      <Trash2 className="h-3.5 w-3.5" />
+                    </Button>
+                  </div>
                 </div>
                 <div className="mt-4 pt-4 border-t border-slate-800">
                   <div className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">{c.type === "customer" ? "Alacak Bakiye" : "Borç Bakiye"}</div>
@@ -126,7 +176,9 @@ export default function CurrentAccounts() {
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="bg-[#131C2E] border-slate-700/60 text-slate-100 sm:max-w-[560px]">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl">Yeni Cari Hesap</DialogTitle>
+            <DialogTitle className="font-display text-xl">
+              {editingId ? "Cariyi Düzenle" : "Yeni Cari Hesap"}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 py-2">
             <div className="grid grid-cols-2 gap-3">
@@ -141,7 +193,9 @@ export default function CurrentAccounts() {
                 </Select>
               </div>
               <div>
-                <Label className="text-slate-300 text-xs uppercase tracking-wider">Başlangıç Bakiye</Label>
+                <Label className="text-slate-300 text-xs uppercase tracking-wider">
+                  {editingId ? "Güncel Bakiye" : "Başlangıç Bakiye"}
+                </Label>
                 <Input type="number" step="0.01" value={form.balance} onChange={(e) => setForm({ ...form, balance: e.target.value })} className="bg-[#0E1522] border-slate-700 font-mono-data" data-testid="cari-form-balance-input" />
               </div>
             </div>
@@ -182,7 +236,9 @@ export default function CurrentAccounts() {
           </div>
           <DialogFooter>
             <Button variant="ghost" onClick={() => setOpen(false)}>İptal</Button>
-            <Button onClick={submit} className="bg-emerald-500 hover:bg-emerald-600 text-white" data-testid="cari-form-submit-button">Cari Ekle</Button>
+            <Button onClick={submit} className="bg-emerald-500 hover:bg-emerald-600 text-white" data-testid="cari-form-submit-button">
+              {editingId ? "Güncelle" : "Cari Ekle"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

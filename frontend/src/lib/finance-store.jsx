@@ -52,6 +52,20 @@ export const FinanceProvider = ({ children }) => {
   const deleteAccount = (id) =>
     setState((s) => ({ ...s, accounts: s.accounts.filter((a) => a.id !== id) }));
 
+  const updateAccount = (id, patch) =>
+    setState((s) => ({
+      ...s,
+      accounts: s.accounts.map((a) =>
+        a.id === id
+          ? {
+              ...a,
+              ...patch,
+              balance: patch.balance !== undefined ? Number(patch.balance) || 0 : a.balance,
+            }
+          : a,
+      ),
+    }));
+
   const adjustAccount = (id, delta) =>
     setState((s) => ({
       ...s,
@@ -69,6 +83,20 @@ export const FinanceProvider = ({ children }) => {
 
   const deleteCari = (id) =>
     setState((s) => ({ ...s, cari: s.cari.filter((c) => c.id !== id) }));
+
+  const updateCari = (id, patch) =>
+    setState((s) => ({
+      ...s,
+      cari: s.cari.map((c) =>
+        c.id === id
+          ? {
+              ...c,
+              ...patch,
+              balance: patch.balance !== undefined ? Number(patch.balance) || 0 : c.balance,
+            }
+          : c,
+      ),
+    }));
 
   const adjustCari = (id, delta) =>
     setState((s) => ({
@@ -268,9 +296,11 @@ export const FinanceProvider = ({ children }) => {
     categories: { income: INCOME_CATEGORIES, expense: EXPENSE_CATEGORIES },
     addAccount,
     deleteAccount,
+    updateAccount,
     adjustAccount,
     addCari,
     deleteCari,
+    updateCari,
     adjustCari,
     addIncome,
     deleteIncome,

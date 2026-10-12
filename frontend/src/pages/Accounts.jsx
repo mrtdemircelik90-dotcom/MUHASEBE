@@ -12,24 +12,59 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
-import { Plus, ArrowLeftRight, Trash2, Wallet, Copy } from "lucide-react";
+import { Plus, ArrowLeftRight, Trash2, Wallet, Copy, Pencil } from "lucide-react";
 import { TransferDialog } from "@/components/FinanceDialogs";
 import { toast } from "sonner";
 
+const emptyForm = () => ({
+  bank_name: "",
+  account_name: "",
+  account_type: "Vadesiz Ticari",
+  iban: "",
+  balance: "",
+  color: "#10B981",
+});
+
 export default function Accounts() {
-  const { accounts, transfers, addAccount, deleteAccount } = useFinance();
+  const { accounts, transfers, addAccount, deleteAccount, updateAccount } = useFinance();
   const [transferOpen, setTransferOpen] = useState(false);
-  const [addOpen, setAddOpen] = useState(false);
-  const [form, setForm] = useState({ bank_name: "", account_name: "", account_type: "Vadesiz Ticari", iban: "", balance: "", color: "#10B981" });
+  const [dialogOpen, setDialogOpen] = useState(false);
+  const [editingId, setEditingId] = useState(null);
+  const [form, setForm] = useState(emptyForm());
 
   const total = accounts.reduce((s, a) => s + a.balance, 0);
 
+  const openAdd = () => {
+    setEditingId(null);
+    setForm(emptyForm());
+    setDialogOpen(true);
+  };
+
+  const openEdit = (a) => {
+    setEditingId(a.id);
+    setForm({
+      bank_name: a.bank_name,
+      account_name: a.account_name,
+      account_type: a.account_type,
+      iban: a.iban,
+      balance: a.balance,
+      color: a.color,
+    });
+    setDialogOpen(true);
+  };
+
   const submit = () => {
     if (!form.bank_name || !form.account_name) return toast.error("Banka ve hesap adı zorunlu");
-    addAccount(form);
-    toast.success("Hesap eklendi");
-    setForm({ bank_name: "", account_name: "", account_type: "Vadesiz Ticari", iban: "", balance: "", color: "#10B981" });
-    setAddOpen(false);
+    if (editingId) {
+      updateAccount(editingId, form);
+      toast.success("Hesap güncellendi");
+    } else {
+      addAccount(form);
+      toast.success("Hesap eklendi");
+    }
+    setForm(emptyForm());
+    setEditingId(null);
+    setDialogOpen(false);
   };
 
   const copyIban = (iban) => {
@@ -50,7 +85,7 @@ export default function Accounts() {
           <Button onClick={() => setTransferOpen(true)} className="bg-cyan-500 hover:bg-cyan-600 text-white gap-1.5" data-testid="account-transfer-button">
             <ArrowLeftRight className="h-4 w-4" /> Virman
           </Button>
-          <Button onClick={() => setAddOpen(true)} className="bg-emerald-500 hover:bg-emerald-600 text-white gap-1.5" data-testid="account-add-button">
+          <Button onClick={openAdd} className="bg-emerald-500 hover:bg-emerald-600 text-white gap-1.5" data-testid="account-add-button">
             <Plus className="h-4 w-4" /> Yeni Hesap
           </Button>
         </div>
@@ -58,7 +93,7 @@ export default function Accounts() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {accounts.map((a, idx) => (
-          <Card key={a.id} className="bg-[#131C2E] border-slate-800 p-5 relative overflow-hidden" data-testid={`account-card-${idx}`}>
+          <Card key={a.id} className="bg-[#131C2E] border-slate-800 p-5 relative overflow-hidden group hover:border-slate-700 transition-colors" data-testid={`account-card-${idx}`}>
             <div className="absolute top-0 right-0 h-20 w-20 rounded-full blur-3xl opacity-30" style={{ background: a.color }} />
             <div className="relative flex items-start justify-between">
               <div className="flex items-center gap-3">
@@ -70,9 +105,28 @@ export default function Accounts() {
                   <div className="text-xs text-slate-500">{a.account_type}</div>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="h-8 w-8 text-slate-500 hover:text-rose-400" onClick={() => { if (confirm("Hesabı sil?")) { deleteAccount(a.id); toast.success("Hesap silindi"); } }} data-testid={`account-delete-button-${idx}`}>
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-slate-500 hover:text-emerald-400"
+                  onClick={() => openEdit(a)}
+                  data-testid={`account-edit-button-${idx}`}
+                  title="Düzenle"
+                >
+                  <Pencil className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-slate-500 hover:text-rose-400"
+                  onClick={() => { if (confirm("Hesabı sil?")) { deleteAccount(a.id); toast.success("Hesap silindi"); } }}
+                  data-testid={`account-delete-button-${idx}`}
+                  title="Sil"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
             <div className="mt-5">
               <div className="text-[10px] font-mono tracking-widest text-slate-500 uppercase">{a.account_name}</div>
@@ -111,10 +165,12 @@ export default function Accounts() {
 
       <TransferDialog open={transferOpen} onOpenChange={setTransferOpen} />
 
-      <Dialog open={addOpen} onOpenChange={setAddOpen}>
+      <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
         <DialogContent className="bg-[#131C2E] border-slate-700/60 text-slate-100 sm:max-w-[520px]">
           <DialogHeader>
-            <DialogTitle className="font-display text-xl">Yeni Banka/Kasa Hesabı</DialogTitle>
+            <DialogTitle className="font-display text-xl">
+              {editingId ? "Hesabı Düzenle" : "Yeni Banka/Kasa Hesabı"}
+            </DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 py-2">
             <div className="grid grid-cols-2 gap-3">
@@ -133,7 +189,9 @@ export default function Accounts() {
                 <Input value={form.account_type} onChange={(e) => setForm({ ...form, account_type: e.target.value })} className="bg-[#0E1522] border-slate-700" />
               </div>
               <div>
-                <Label className="text-slate-300 text-xs uppercase tracking-wider">Başlangıç Bakiye</Label>
+                <Label className="text-slate-300 text-xs uppercase tracking-wider">
+                  {editingId ? "Güncel Bakiye" : "Başlangıç Bakiye"}
+                </Label>
                 <Input type="number" step="0.01" value={form.balance} onChange={(e) => setForm({ ...form, balance: e.target.value })} className="bg-[#0E1522] border-slate-700 font-mono-data" data-testid="account-form-balance-input" />
               </div>
             </div>
@@ -147,8 +205,10 @@ export default function Accounts() {
             </div>
           </div>
           <DialogFooter>
-            <Button variant="ghost" onClick={() => setAddOpen(false)}>İptal</Button>
-            <Button onClick={submit} className="bg-emerald-500 hover:bg-emerald-600 text-white" data-testid="account-form-submit-button">Hesap Ekle</Button>
+            <Button variant="ghost" onClick={() => setDialogOpen(false)}>İptal</Button>
+            <Button onClick={submit} className="bg-emerald-500 hover:bg-emerald-600 text-white" data-testid="account-form-submit-button">
+              {editingId ? "Güncelle" : "Hesap Ekle"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
